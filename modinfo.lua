@@ -1,7 +1,7 @@
 name = "Gesture Wheel"
 description = "Adds a wheel selection interface for emotes, making it easier to emote."
 author = "rezecib"
-version = "1.5.5"
+version = "1.5.6"
 
 forumthread = "/files/file/980-dst-gesture-wheel/"
 
@@ -41,18 +41,20 @@ end
 --TODO: Make sure this stays in sync with the modmain and emote file
 local eight_options =
 {
-	{description = "/wave", data = "wave"},
-	{description = "/bye", data = "bye"},
-	{description = "/happy", data = "happy"},
-	{description = "/angry", data = "angry"},
-	{description = "/sad", data = "sad"},
-	{description = "/annoyed", data = "annoyed"},
-	{description = "/joy", data = "joy"},
-	{description = "/dance", data = "dance"},
-	{description = "/bonesaw", data = "bonesaw"},
-	{description = "/facepalm", data = "facepalm"},
-	{description = "/kiss", data = "kiss"},
-	{description = "/pose", data = "pose"},
+	{description = "/wave",		data = "wave"},
+	{description = "/bye",		data = "bye"},
+	{description = "/happy",	data = "happy"},
+	{description = "/angry",	data = "angry"},
+	{description = "/sad",		data = "sad"},
+	{description = "/annoyed",	data = "annoyed"},
+	{description = "/joy",		data = "joy"},
+	{description = "/dance",	data = "dance"},
+	{description = "/bonesaw",	data = "bonesaw"},
+	{description = "/facepalm",	data = "facepalm"},
+	{description = "/kiss",		data = "kiss"},
+	{description = "/pose",		data = "pose"},
+	{description = "/sleepy",	data = "sleepy"},
+	{description = "/yawn",		data = "yawn"},
 }
 
 configuration_options =

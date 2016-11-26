@@ -85,7 +85,6 @@ local GestureBadge = Class(Widget, function(self, prefab, emotename, emote, imag
 			self.fx:GetAnimState():SetPercent("tears_fx", 0.2)
 			self.fx:SetScale(scale)
 			local m = 20
-			print(offsetx + emote.fxoffset[1]*m, offset + emote.fxoffset[2]*m, emote.fxoffset[3]*m)
 			self.fx:SetPosition(offsetx + emote.fxoffset[1]*m, offset + emote.fxoffset[2]*m, emote.fxoffset[3]*m)
 			
 			self.fx2 = self.icon:AddChild(UIAnim())
@@ -96,7 +95,6 @@ local GestureBadge = Class(Widget, function(self, prefab, emotename, emote, imag
 			self.fx2:SetRotation(160)
 			self.fx2:SetScale(scale)
 			local m = 20
-			print(offsetx + emote.fxoffset[1]*m - 20, offset + emote.fxoffset[2]*m + 121, emote.fxoffset[3]*m)
 			self.fx2:SetPosition(offsetx + emote.fxoffset[1]*m, offset + emote.fxoffset[2]*m - 50, emote.fxoffset[3]*m)
 		end
 		self.puppetframe = self.icon:AddChild(Image(ATLAS, "avatar_frame_white.tex"))

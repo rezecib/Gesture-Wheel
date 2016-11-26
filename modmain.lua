@@ -36,7 +36,7 @@ local STARTSCALE = nil
 local NORMSCALE = nil
 
 local gesture = nil
-local EMOTES = {
+local DEFAULT_EMOTES = {
 	{name = "bye",		anim = {anim={"emoteXL_waving4", "emoteXL_waving3"}, randomanim=true}},
 	{name = "annoyed",	anim = {anim="emoteXL_annoyed"}},
 	{name = "sad",		anim = {anim="emoteXL_sad", fx="tears", fxoffset={0.25,3.25,0}, fxdelay=17*GLOBAL.FRAMES}},
@@ -52,6 +52,11 @@ local EMOTES = {
 	--TODO: make sure this list stays up to date
 }
 
+local EMOTE_ITEMS = {
+	{name = "sleepy",	anim = {anim="emote_sleepy"},	item = "emote_sleepy"},
+	{name = "yawn",		anim = {anim="emote_yawn"},	item = "emote_yawn"},
+}
+
 local PARTY_ADDED = GLOBAL.KnownModIndex:IsModEnabled("workshop-437521942")
 local OLD_ADDED = GLOBAL.KnownModIndex:IsModEnabled("workshop-732180082")
 for k,v in pairs(GLOBAL.KnownModIndex:GetModsToLoad()) do
@@ -61,73 +66,87 @@ end
 
 local emote_sets = {}
 
-if PARTY_ADDED then
-	ONLYEIGHT = false -- this isn't compatible with double-ring
+local function BuildEmoteSets()
+	emote_sets = {}
 	
-	local function build_anim(pre, loop, pst)
-		local anim = { pre }
-		for i = 0, 10000 do
-			table.insert(anim, loop)
+	if PARTY_ADDED then
+		ONLYEIGHT = false -- this isn't compatible with double-ring
+		
+		local function build_anim(pre, loop, pst)
+			local anim = { pre }
+			for i = 0, 10000 do
+				table.insert(anim, loop)
+			end
+			table.insert(anim, pst)
+			return anim
 		end
-		table.insert(anim, pst)
-		return anim
+		
+		table.insert(emote_sets, { emotes = {
+				{name = "dance2",	anim = {anim = build_anim("idle_onemanband1_pre", "idle_onemanband1_loop", "idle_onmanband1_pst")}},
+				{name = "dance3",	anim = {anim = build_anim("idle_onemanband2_pre", "idle_onemanband2_loop", "idle_onmanband2_pst")}},
+				{name = "run",		anim = { anim = { "run_pre", "run_loop", "run_loop", "run_loop", "run_pst" } }},
+				{name = "thriller",	anim = {anim = build_anim("mime2", "mime2", "mime2")}},
+				{name = "choochoo",	anim = { anim = "mime3" }},
+				{name = "plsgo",	anim = { anim = "mime4" }},
+				{name = "ez",		anim = {anim = "mime5" }},
+				{name = "box",		anim = { anim = "mime6" }},
+				{name = "bicycle",	anim = {anim = build_anim("mime8", "mime8", "mime8")}},
+				{name = "comehere",	anim = {anim = "mime7" }},
+				{name = "wasted",	anim = {anim = build_anim("dozy", "sleep_loop", "sleep_loop")}},
+				{name = "buffed",	anim = {anim = "powerup" }},
+				{name = "pushup",	anim = {anim = build_anim("powerdown", "powerdown", "powerdown")}},
+				{name = "fakebed",	anim = {anim = build_anim("bedroll", "bedroll_sleep_loop", "bedroll_wakeup")}},
+				{name = "shock",	anim = {anim = build_anim("shock", "shock", "shock_pst")}},
+				{name = "dead",		anim = {anim = {"death", "wakeup"} }},
+				{name = "spooked",	anim = {anim = build_anim("distress_pre", "distress_loop", "distress_pst")}},
+			},
+			radius_offset = 0
+		})
+	end
+
+	if OLD_ADDED then
+		ONLYEIGHT = false -- this isn't compatible with double-ring
+		
+		table.insert(emote_sets, { emotes = {
+				{name = "angry2",	anim = {anim = "emote_angry"}},
+				{name = "annoyed2",	anim = {anim = "emote_annoyed_palmdown"}},
+				{name = "gdi",		anim = {anim = "emote_annoyed_facepalm"}},
+				{name = "pose2",	anim = {anim = "emote_feet"}},
+				{name = "pose3",	anim = {anim = "emote_hands"}},
+				{name = "pose4",	anim = {anim = "emote_hat"}},
+				{name = "pose5",	anim = {anim = "emote_pants"}},
+				{name = "grats",	anim = {anim = "emote_happycheer"}},
+				{name = "sigh",		anim = {anim = "emote_sad"}},
+				{name = "heya",		anim = {anim = "emote_waving"}},
+			},
+			radius_offset = -50
+		})
 	end
 	
-	table.insert(emote_sets, { emotes = {
-			{name = "dance2",	anim = {anim = build_anim("idle_onemanband1_pre", "idle_onemanband1_loop", "idle_onmanband1_pst")}},
-			{name = "dance3",	anim = {anim = build_anim("idle_onemanband2_pre", "idle_onemanband2_loop", "idle_onmanband2_pst")}},
-			{name = "run",		anim = { anim = { "run_pre", "run_loop", "run_loop", "run_loop", "run_pst" } }},
-			{name = "thriller",	anim = {anim = build_anim("mime2", "mime2", "mime2")}},
-			{name = "choochoo",	anim = { anim = "mime3" }},
-			{name = "plsgo",	anim = { anim = "mime4" }},
-			{name = "ez",		anim = {anim = "mime5" }},
-			{name = "box",		anim = { anim = "mime6" }},
-			{name = "bicycle",	anim = {anim = build_anim("mime8", "mime8", "mime8")}},
-			{name = "comehere",	anim = {anim = "mime7" }},
-			{name = "wasted",	anim = {anim = build_anim("dozy", "sleep_loop", "sleep_loop")}},
-			{name = "buffed",	anim = {anim = "powerup" }},
-			{name = "pushup",	anim = {anim = build_anim("powerdown", "powerdown", "powerdown")}},
-			{name = "fakebed",	anim = {anim = build_anim("bedroll", "bedroll_sleep_loop", "bedroll_wakeup")}},
-			{name = "shock",	anim = {anim = build_anim("shock", "shock", "shock_pst")}},
-			{name = "dead",		anim = {anim = {"death", "wakeup"} }},
-			{name = "spooked",	anim = {anim = build_anim("distress_pre", "distress_loop", "distress_pst")}},
-		},
-		radius_offset = 0
-	})
-end
+	local EMOTES = {}
+	for _,v in ipairs(DEFAULT_EMOTES) do
+		table.insert(EMOTES, v)
+	end
+	for _,item in pairs(EMOTE_ITEMS) do
+		if GLOBAL.TheInventory:CheckClientOwnership(GLOBAL.TheNet:GetUserID(), item.item) then
+			table.insert(EMOTES, item)
+		end
+	end
 
-if OLD_ADDED then
-	ONLYEIGHT = false -- this isn't compatible with double-ring
-	
-	table.insert(emote_sets, { emotes = {
-			{name = "angry2",	anim = {anim = "emote_angry"}},
-			{name = "annoyed2",	anim = {anim = "emote_annoyed_palmdown"}},
-			{name = "gdi",		anim = {anim = "emote_annoyed_facepalm"}},
-			{name = "pose2",	anim = {anim = "emote_feet"}},
-			{name = "pose3",	anim = {anim = "emote_hands"}},
-			{name = "pose4",	anim = {anim = "emote_hat"}},
-			{name = "pose5",	anim = {anim = "emote_pants"}},
-			{name = "grats",	anim = {anim = "emote_happycheer"}},
-			{name = "sigh",		anim = {anim = "emote_sad"}},
-			{name = "heya",		anim = {anim = "emote_waving"}},
-		},
-		radius_offset = -50
-	})
-end
-
-if ONLYEIGHT then
-	local EIGHTEMOTES = {}
-	for i,v in ipairs(EIGHTS) do
-		for i,w in ipairs(EMOTES) do
-			if v == w.name then
-				table.insert(EIGHTEMOTES, w)
+	if ONLYEIGHT then
+		local EIGHTEMOTES = {}
+		for i,v in ipairs(EIGHTS) do
+			for i,w in ipairs(EMOTES) do
+				if v == w.name then
+					table.insert(EIGHTEMOTES, w)
+				end
 			end
 		end
+		EMOTES = EIGHTEMOTES
 	end
-	EMOTES = EIGHTEMOTES
-end
 
-table.insert(emote_sets, {emotes = EMOTES, radius_offset = 0})
+	table.insert(emote_sets, {emotes = EMOTES, radius_offset = 0})
+end
 
 local function IsDefaultScreen()
 	return (GLOBAL.TheFrontEnd:GetActiveScreen().name or ""):find("HUD") ~= nil
@@ -205,7 +224,11 @@ end
 
 local handlers_applied = false
 local function AddGestureWheel(self)
+	BuildEmoteSets() --delay this so that the account item checks are more likely to work
 	controls = self -- this just makes controls available in the rest of the modmain's functions
+	if controls.gesturewheel then
+		controls.gesturewheel:Kill()
+	end
 	controls.gesturewheel = controls:AddChild(GestureWheel(emote_sets, SHOWIMAGE, SHOWTEXT, LEFTSTICK))
 	ResetTransform()
 	controls.gesturewheel:Hide()
@@ -226,16 +249,35 @@ local function AddGestureWheel(self)
 				HideGestureWheel(true)
 			end
 		end)
+		
+		local OldOnUpdate = controls.OnUpdate
+		local function OnUpdate(...)
+			OldOnUpdate(...)
+			if keydown then
+				self.gesturewheel:OnUpdate()
+			end
+		end
+		controls.OnUpdate = OnUpdate
+		
 		handlers_applied = true
 	end
-	
-	local OldOnUpdate = controls.OnUpdate
-	local function OnUpdate(...)
-		OldOnUpdate(...)
-		if keydown then
-			self.gesturewheel:OnUpdate()
-		end
-	end
-	controls.OnUpdate = OnUpdate
 end
 AddClassPostConstruct( "widgets/controls", AddGestureWheel )
+
+--In order to update the emote set when a skin is received, hook into the giftitempopup
+AddClassPostConstruct("screens/giftitempopup", function(self)
+	local function ScheduleRebuild()
+		--give it a little time to update the skin inventory
+		controls.owner:DoTaskInTime(5, function() AddGestureWheel(controls) end)
+	end
+	local OldOnClose = self.OnClose
+	function self:OnClose(...)
+		OldOnClose(self, ...)
+		ScheduleRebuild()
+	end
+	local OldApplySkin = self.ApplySkin
+	function self:ApplySkin(...)
+		OldApplySkin(self, ...)
+		ScheduleRebuild()
+	end
+end)
