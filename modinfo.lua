@@ -1,7 +1,7 @@
 name = "Gesture Wheel"
 description = "Adds a wheel selection interface for emotes, making it easier to emote."
 author = "rezecib"
-version = "1.5.6"
+version = "1.5.7"
 
 forumthread = "/files/file/980-dst-gesture-wheel/"
 

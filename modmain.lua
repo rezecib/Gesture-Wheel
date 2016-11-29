@@ -127,8 +127,22 @@ local function BuildEmoteSets()
 	for _,v in ipairs(DEFAULT_EMOTES) do
 		table.insert(EMOTES, v)
 	end
+    -- (hopefully) temporary code that makes crawling the whole inventory a little more efficient
+    EMOTE_ITEM_LOOKUP = {}
+    for _,item in pairs(EMOTE_ITEMS) do
+        EMOTE_ITEM_LOOKUP[item.item] = item
+    end
+    -- this is kind of ugly but I want to make the ordering consistent, and they might somehow have duplicates?
+    EMOTE_ITEM_POSSESSION = {}
+    for _,item in pairs(GLOBAL.TheInventory:GetFullInventory()) do
+        if EMOTE_ITEM_LOOKUP[item.item_type] then
+            EMOTE_ITEM_POSSESSION[item.item_type] = true
+        end
+    end
+    -- end ugly temporary code
 	for _,item in pairs(EMOTE_ITEMS) do
-		if GLOBAL.TheInventory:CheckClientOwnership(GLOBAL.TheNet:GetUserID(), item.item) then
+		-- if GLOBAL.TheInventory:CheckClientOwnership(GLOBAL.TheNet:GetUserID(), item.item) then
+        if EMOTE_ITEM_POSSESSION[item.item] then
 			table.insert(EMOTES, item)
 		end
 	end
