@@ -22,20 +22,12 @@ for i=1,8 do
 	EIGHTS[i] = GetModConfigData("EIGHT"..i)
 end
 
-local GestureWheel = GLOBAL.require("widgets/gesturewheel")
+local function GetTargetRadius(num_emotes)
+	return 70*num_emotes / math.pi
+end
 
-local cursorx = 0
-local cursory = 0
-local centerx = 0
-local centery = 0
-local controls = nil
-local keydown = false
+--Constants for the emote definitions; name is used for display text, anim for puppet animation
 
---These get populated later when checking the screen size
-local STARTSCALE = nil
-local NORMSCALE = nil
-
-local gesture = nil
 local DEFAULT_EMOTES = {
 	{name = "bye",		anim = {anim={"emoteXL_waving4", "emoteXL_waving3"}, randomanim=true}},
 	{name = "annoyed",	anim = {anim="emoteXL_annoyed"}},
@@ -52,11 +44,13 @@ local DEFAULT_EMOTES = {
 	--TODO: make sure this list stays up to date
 }
 
+--These emotes are unlocked by certain cosmetic Steam/skin items
 local EMOTE_ITEMS = {
 	{name = "sleepy",	anim = {anim="emote_sleepy"},	item = "emote_sleepy"},
-	{name = "yawn",		anim = {anim="emote_yawn"},	item = "emote_yawn"},
+	{name = "yawn",		anim = {anim="emote_yawn"},	    item = "emote_yawn"},
 }
 
+--Checking for other emote mods
 local PARTY_ADDED = GLOBAL.KnownModIndex:IsModEnabled("workshop-437521942")
 local OLD_ADDED = GLOBAL.KnownModIndex:IsModEnabled("workshop-732180082")
 for k,v in pairs(GLOBAL.KnownModIndex:GetModsToLoad()) do
@@ -64,50 +58,37 @@ for k,v in pairs(GLOBAL.KnownModIndex:GetModsToLoad()) do
 	OLD_ADDED = OLD_ADDED or v == "workshop-732180082"
 end
 
-local emote_sets = {}
-
-local function BuildEmoteSets()
-	emote_sets = {}
-	
-	if PARTY_ADDED then
-		ONLYEIGHT = false -- this isn't compatible with double-ring
-		
-		local function build_anim(pre, loop, pst)
-			local anim = { pre }
-			for i = 0, 10000 do
-				table.insert(anim, loop)
-			end
-			table.insert(anim, pst)
-			return anim
-		end
-		
-		table.insert(emote_sets, { emotes = {
-				{name = "dance2",	anim = {anim = build_anim("idle_onemanband1_pre", "idle_onemanband1_loop", "idle_onmanband1_pst")}},
-				{name = "dance3",	anim = {anim = build_anim("idle_onemanband2_pre", "idle_onemanband2_loop", "idle_onmanband2_pst")}},
-				{name = "run",		anim = { anim = { "run_pre", "run_loop", "run_loop", "run_loop", "run_pst" } }},
-				{name = "thriller",	anim = {anim = build_anim("mime2", "mime2", "mime2")}},
-				{name = "choochoo",	anim = { anim = "mime3" }},
-				{name = "plsgo",	anim = { anim = "mime4" }},
-				{name = "ez",		anim = {anim = "mime5" }},
-				{name = "box",		anim = { anim = "mime6" }},
-				{name = "bicycle",	anim = {anim = build_anim("mime8", "mime8", "mime8")}},
-				{name = "comehere",	anim = {anim = "mime7" }},
-				{name = "wasted",	anim = {anim = build_anim("dozy", "sleep_loop", "sleep_loop")}},
-				{name = "buffed",	anim = {anim = "powerup" }},
-				{name = "pushup",	anim = {anim = build_anim("powerdown", "powerdown", "powerdown")}},
-				{name = "fakebed",	anim = {anim = build_anim("bedroll", "bedroll_sleep_loop", "bedroll_wakeup")}},
-				{name = "shock",	anim = {anim = build_anim("shock", "shock", "shock_pst")}},
-				{name = "dead",		anim = {anim = {"death", "wakeup"} }},
-				{name = "spooked",	anim = {anim = build_anim("distress_pre", "distress_loop", "distress_pst")}},
+local PARTY_EMOTES = {}
+if PARTY_ADDED then
+	ONLYEIGHT = false -- this isn't compatible with double-ring
+	PARTY_EMOTES = { emotes = {
+				{name = "dance2",	anim = {anim = "idle_onemanband1_loop"}},
+				{name = "dance3",	anim = {anim = "idle_onemanband2_loop"}},
+				{name = "run",		anim = {anim = {"run_pre", "run_loop", "run_loop", "run_loop", "run_pst"}}},
+				{name = "thriller",	anim = {anim = "mime2"}},
+				{name = "choochoo",	anim = {anim = "mime3"}},
+				{name = "plsgo",	anim = {anim = "mime4"}},
+				{name = "ez",		anim = {anim = "mime5"}},
+				{name = "box",		anim = {anim = "mime6"}},
+				{name = "bicycle",	anim = {anim = "mime8"}},
+				{name = "comehere",	anim = {anim = "mime7"}},
+				{name = "wasted",	anim = {anim = "sleep_loop"}},
+				{name = "buffed",	anim = {anim = "powerup"}},
+				{name = "pushup",	anim = {anim = "powerdown"}},
+				{name = "fakebed",	anim = {anim = "bedroll_sleep_loop"}},
+				{name = "shocked",	anim = {anim = "shock"}},
+				{name = "dead",		anim = {anim = {"death", "wakeup"}}},
+				{name = "spooked",	anim = {anim = "distress_loop"}},
 			},
-			radius_offset = 0
-		})
-	end
+		}
+	--Will need to be adjusted if number of emotes changes; currently evaluates to ~399
+	PARTY_EMOTES.radius = GetTargetRadius(#PARTY_EMOTES.emotes) + 20
+end
 
-	if OLD_ADDED then
-		ONLYEIGHT = false -- this isn't compatible with double-ring
-		
-		table.insert(emote_sets, { emotes = {
+local OLD_EMOTES = {}
+if OLD_ADDED then
+	ONLYEIGHT = false -- this isn't compatible with double-ring
+	OLD_EMOTES = { emotes = {
 				{name = "angry2",	anim = {anim = "emote_angry"}},
 				{name = "annoyed2",	anim = {anim = "emote_annoyed_palmdown"}},
 				{name = "gdi",		anim = {anim = "emote_annoyed_facepalm"}},
@@ -119,30 +100,32 @@ local function BuildEmoteSets()
 				{name = "sigh",		anim = {anim = "emote_sad"}},
 				{name = "heya",		anim = {anim = "emote_waving"}},
 			},
-			radius_offset = -50
-		})
+		}
+	--Will need to be adjusted if number of emotes changes; currently evaluates to ~173
+	OLD_EMOTES.radius = GetTargetRadius(#OLD_EMOTES.emotes) - 50
+end
+
+local emote_sets = {}
+
+local function BuildEmoteSets()
+	emote_sets = {}
+	
+	if PARTY_ADDED then
+		table.insert(emote_sets, PARTY_EMOTES)
+	end
+
+	if OLD_ADDED then
+		table.insert(emote_sets, OLD_EMOTES)
 	end
 	
+	--Add in all the default emotes
 	local EMOTES = {}
 	for _,v in ipairs(DEFAULT_EMOTES) do
 		table.insert(EMOTES, v)
 	end
-    -- (hopefully) temporary code that makes crawling the whole inventory a little more efficient
-    EMOTE_ITEM_LOOKUP = {}
-    for _,item in pairs(EMOTE_ITEMS) do
-        EMOTE_ITEM_LOOKUP[item.item] = item
-    end
-    -- this is kind of ugly but I want to make the ordering consistent, and they might somehow have duplicates?
-    EMOTE_ITEM_POSSESSION = {}
-    for _,item in pairs(GLOBAL.TheInventory:GetFullInventory()) do
-        if EMOTE_ITEM_LOOKUP[item.item_type] then
-            EMOTE_ITEM_POSSESSION[item.item_type] = true
-        end
-    end
-    -- end ugly temporary code
+	--Check if we have some of the emote items
 	for _,item in pairs(EMOTE_ITEMS) do
-		-- if GLOBAL.TheInventory:CheckClientOwnership(GLOBAL.TheNet:GetUserID(), item.item) then
-        if EMOTE_ITEM_POSSESSION[item.item] then
+		if GLOBAL.TheInventory:CheckOwnership(item.item) then
 			table.insert(EMOTES, item)
 		end
 	end
@@ -158,12 +141,34 @@ local function BuildEmoteSets()
 		end
 		EMOTES = EIGHTEMOTES
 	end
-
-	table.insert(emote_sets, {emotes = EMOTES, radius_offset = 0})
+	
+	--Will need to be adjusted if number of emotes changes; currently evaluates to ~282
+	table.insert(emote_sets, {
+			emotes = EMOTES,
+			radius = ONLYEIGHT and GetTargetRadius(#EMOTES)
+								-- We want it to be the same radius regardless of how many you unlocked
+								or GetTargetRadius(#DEFAULT_EMOTES + #EMOTE_ITEMS)-30
+		}
+	)
 end
 
+--All code below is for handling the wheel
+
+local GestureWheel = GLOBAL.require("widgets/gesturewheel")
+
+--Variables to control the display of the wheel
+local cursorx = 0
+local cursory = 0
+local centerx = 0
+local centery = 0
+local controls = nil
+local keydown = false
+local STARTSCALE = nil
+local NORMSCALE = nil
+
 local function IsDefaultScreen()
-	return (GLOBAL.TheFrontEnd:GetActiveScreen().name or ""):find("HUD") ~= nil
+	local screen = GLOBAL.TheFrontEnd:GetActiveScreen()
+	return ((screen and type(screen.name) == "string") and screen.name or ""):find("HUD") ~= nil
 		and not(GLOBAL.ThePlayer.HUD:IsControllerCraftingOpen() or GLOBAL.ThePlayer.HUD:IsControllerInventoryOpen())
 end
 
@@ -263,20 +268,22 @@ local function AddGestureWheel(self)
 				HideGestureWheel(true)
 			end
 		end)
-		
-		local OldOnUpdate = controls.OnUpdate
-		local function OnUpdate(...)
-			OldOnUpdate(...)
-			if keydown then
-				self.gesturewheel:OnUpdate()
-			end
-		end
-		controls.OnUpdate = OnUpdate
-		
+				
 		handlers_applied = true
 	end
 end
 AddClassPostConstruct( "widgets/controls", AddGestureWheel )
+
+--Patch the class definition directly instead of each new instance
+local Controls = GLOBAL.require("widgets/controls")
+local OldOnUpdate = Controls.OnUpdate
+local function OnUpdate(self, ...)
+	OldOnUpdate(self, ...)
+	if keydown then
+		self.gesturewheel:OnUpdate()
+	end
+end
+Controls.OnUpdate = OnUpdate
 
 --In order to update the emote set when a skin is received, hook into the giftitempopup
 AddClassPostConstruct("screens/giftitempopup", function(self)

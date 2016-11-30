@@ -1,7 +1,7 @@
 name = "Gesture Wheel"
 description = "Adds a wheel selection interface for emotes, making it easier to emote."
 author = "rezecib"
-version = "1.5.7"
+version = "1.5.8"
 
 forumthread = "/files/file/980-dst-gesture-wheel/"
 
@@ -59,123 +59,123 @@ local eight_options =
 
 configuration_options =
 {
-    {
-        name = "KEYBOARDTOGGLEKEY",
-        label = "Toggle Button",
+	{
+		name = "KEYBOARDTOGGLEKEY",
+		label = "Toggle Button",
 		hover = "The key you need to hold to bring up the gesture wheel.",
-        options = keyslist,
-        default = "G", --G
-    },    
-    {
-        name = "SCALEFACTOR",
-        label = "Wheel Size",
+		options = keyslist,
+		default = "G", --G
+	},    
+	{
+		name = "SCALEFACTOR",
+		label = "Wheel Size",
 		hover = "How big to make the wheel.",
-        options = scalefactors,
-        default = 1, --G
-    },    
-    {
-        name = "IMAGETEXT",
-        label = "Show Picture/Text",
-        options = {
+		options = scalefactors,
+		default = 1, --G
+	},    
+	{
+		name = "IMAGETEXT",
+		label = "Show Picture/Text",
+		options = {
 			{description = "Both", data = 3},
 			{description = "Picture Only", data = 2},
 			{description = "Text Only", data = 1},
 		},
-        default = 3,
-    },    
-    {
-        name = "CENTERWHEEL",
-        label = "Center Wheel",
-        options = {
+		default = 3,
+	},    
+	{
+		name = "CENTERWHEEL",
+		label = "Center Wheel",
+		options = {
 			{description = "On", data = true},
 			{description = "Off", data = false},
 		},
-        default = true,
-    },    
-    {
-        name = "RESTORECURSOR",
-        label = "Restore cursor position",
-        options = {
+		default = true,
+	},    
+	{
+		name = "RESTORECURSOR",
+		label = "Restore cursor position",
+		options = {
 			{description = "Relative", data = 3},
 			{description = "Absolute", data = 2},
 			{description = "Off", data = 1},
 		},
-        default = 3,
-    },    
-    {
-        name = "LEFTSTICK",
-        label = "Controller Stick",
+		default = 3,
+	},    
+	{
+		name = "LEFTSTICK",
+		label = "Controller Stick",
 		hover = "Which controller analog stick to use to select emotes on the wheel.",
-        options = {
+		options = {
 			{description = "Left", data = true},
 			{description = "Right", data = false},
 		},
-        default = true,
-    },    
-    {
-        name = "ONLYEIGHT",
-        label = "Limit to 8",
+		default = true,
+	},    
+	{
+		name = "ONLYEIGHT",
+		label = "Limit to 8",
 		hover = "Limits the wheel to 8 emotes, determined by the selections in the options below.",
-        options = {
+		options = {
 			{description = "On", data = true},
 			{description = "Off", data = false},
 		},
-        default = false,
-    },    
-    {
-        name = "EIGHT1",
-        label = "Right Emote",
+		default = false,
+	},    
+	{
+		name = "EIGHT1",
+		label = "Right Emote",
 		hover = "This will be shown directly to the right.",
-        options = eight_options,
-        default = "hi",
-    },    
-    {
-        name = "EIGHT2",
-        label = "Up-Right Emote",
+		options = eight_options,
+		default = "hi",
+	},    
+	{
+		name = "EIGHT2",
+		label = "Up-Right Emote",
 		hover = "This will be shown diagonally up-right.",
-        options = eight_options,
-        default = "dance",
-    },    
-    {
-        name = "EIGHT3",
-        label = "Up Emote",
+		options = eight_options,
+		default = "dance",
+	},    
+	{
+		name = "EIGHT3",
+		label = "Up Emote",
 		hover = "This will be shown directly up.",
-        options = eight_options,
-        default = "happy",
-    },    
-    {
-        name = "EIGHT4",
-        label = "Up-Left Emote",
+		options = eight_options,
+		default = "happy",
+	},    
+	{
+		name = "EIGHT4",
+		label = "Up-Left Emote",
 		hover = "This will be shown diagonally up-left.",
-        options = eight_options,
-        default = "bonesaw",
-    },    
-    {
-        name = "EIGHT5",
-        label = "Left Emote",
+		options = eight_options,
+		default = "bonesaw",
+	},    
+	{
+		name = "EIGHT5",
+		label = "Left Emote",
 		hover = "This will be shown directly to the left.",
-        options = eight_options,
-        default = "bye",
-    },    
-    {
-        name = "EIGHT6",
-        label = "Down-Left Emote",
+		options = eight_options,
+		default = "bye",
+	},    
+	{
+		name = "EIGHT6",
+		label = "Down-Left Emote",
 		hover = "This will be shown diagonally down-left.",
-        options = eight_options,
-        default = "facepalm",
-    },    
-    {
-        name = "EIGHT7",
-        label = "Down Emote",
+		options = eight_options,
+		default = "facepalm",
+	},    
+	{
+		name = "EIGHT7",
+		label = "Down Emote",
 		hover = "This will be shown directly down.",
-        options = eight_options,
-        default = "sad",
-    },    
-    {
-        name = "EIGHT8",
-        label = "Down-Right Emote",
+		options = eight_options,
+		default = "sad",
+	},    
+	{
+		name = "EIGHT8",
+		label = "Down-Right Emote",
 		hover = "This will be shown diagonally down-right.",
-        options = eight_options,
-        default = "kiss",
-    },    
+		options = eight_options,
+		default = "kiss",
+	},    
 }

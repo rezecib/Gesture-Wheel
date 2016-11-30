@@ -13,9 +13,9 @@ local GestureWheel = Class(Widget, function(self, emote_sets, image, text, lefts
     self.icon:SetScale(1)
 	self.gestures = {}
 	
-	local function build_wheel(emotes, radius_offset)
+	local function build_wheel(emotes, radius)
 		local count = #emotes
-		local dist = (70*count)/(math.pi) + radius_offset
+		local dist = radius
 		self.radius = math.max(self.radius or 0, dist)
 		local delta = 2*math.pi/count
 		local theta = 0
@@ -26,7 +26,7 @@ local GestureWheel = Class(Widget, function(self, emote_sets, image, text, lefts
 		end
 	end
 	for _,emote_set in ipairs(emote_sets) do
-		build_wheel(emote_set.emotes, emote_set.radius_offset)
+		build_wheel(emote_set.emotes, emote_set.radius)
 	end
 end)
 
