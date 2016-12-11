@@ -193,9 +193,11 @@ local function ShowGestureWheel()
 	
 	ResetTransform()
 	
-	for _,gesturebadge in pairs(controls.gesturewheel.gestures) do
-		gesturebadge:RefreshSkins()
-	end
+    if SHOWIMAGE then
+        for _,gesturebadge in pairs(controls.gesturewheel.gestures) do
+            gesturebadge:RefreshSkins()
+        end
+    end
 	
 	if RESTORECURSOR then
 		cursorx, cursory = GLOBAL.TheInputProxy:GetOSCursorPos()

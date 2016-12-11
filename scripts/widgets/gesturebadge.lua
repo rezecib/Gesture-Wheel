@@ -186,6 +186,7 @@ local GestureBadge = Class(Widget, function(self, prefab, emotename, emote, imag
 end)
 
 function GestureBadge:RefreshSkins()
+    if not self.puppet then return end
 	local data = TheNet:GetClientTableForUser(ThePlayer.userid)
 	self.puppet:SetSkins(self.prefabname, data.base_skin,
 		{	body = data.body_skin,
