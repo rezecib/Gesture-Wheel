@@ -1,7 +1,7 @@
 name = "Gesture Wheel"
 description = "Adds a wheel selection interface for emotes, making it easier to emote."
 author = "rezecib"
-version = "1.5.9"
+version = "1.6.0"
 
 forumthread = "/files/file/980-dst-gesture-wheel/"
 
@@ -53,6 +53,8 @@ local eight_options =
 	{description = "/facepalm",	data = "facepalm"},
 	{description = "/kiss",		data = "kiss"},
 	{description = "/pose",		data = "pose"},
+	{description = "/sit",		data = "sit"},
+	{description = "/squat",	data = "squat"},
 	{description = "/sleepy",	data = "sleepy"},
 	{description = "/yawn",		data = "yawn"},
 }

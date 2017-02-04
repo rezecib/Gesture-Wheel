@@ -19,7 +19,7 @@ local default_position = {
 
 local positions = {
 	-- default emote exceptions
-	emoteXL_pre_dance0 = {
+	emoteXL_loop_dance0 = {
 		offsety = -32,
 		percent = 1,
 	},
@@ -49,6 +49,14 @@ local positions = {
 	},
 	emote_yawn = {
 		offsetx = 5,
+	},
+	emote_loop_sit3 = {
+		xyscale = 0.8,
+		offsety = -32,
+	},
+	emote_loop_sit4 = {
+		xyscale = 0.8,
+		offsety = -32,
 	},
 	
 	-- party dance mod exceptions
@@ -124,7 +132,10 @@ local GestureBadge = Class(Widget, function(self, prefab, emotename, emote, imag
 	end
 	
 	if image then
-		local anim = type(emote.anim) == "table" and emote.anim[math.floor(#emote.anim/2)] or emote.anim
+		local anim = emote.anim
+		while type(anim) == "table" do
+			anim = anim[math.floor(#anim/(emote.loop and 1 or 2))]
+		end
 		self.puppetbg = self.icon:AddChild(Image(ATLAS, "avatar_bg.tex"))
 		self.puppet = self.icon:AddChild(SkinsPuppet())
 		self.puppet.animstate:SetBank("wilson")

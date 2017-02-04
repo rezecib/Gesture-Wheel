@@ -41,9 +41,10 @@ local DEFAULT_EMOTES = {
 	{name = "bonesaw",	anim = {anim="emoteXL_bonesaw"}},
 	{name = "happy",	anim = {anim="emoteXL_happycheer"}},
 	{name = "angry",	anim = {anim="emoteXL_angry"}},
+	{name = "sit",		anim = {anim={{"emote_pre_sit2", "emote_loop_sit2"}, {"emote_pre_sit4", "emote_loop_sit4"}}, randomanim = true, loop = true, fx = false}},
+	{name = "squat",	anim = {anim={{"emote_pre_sit1", "emote_loop_sit1"}, {"emote_pre_sit3", "emote_loop_sit3"}}, randomanim = true, loop = true, fx = false}},
 	--TODO: make sure this list stays up to date
 }
-
 --These emotes are unlocked by certain cosmetic Steam/skin items
 local EMOTE_ITEMS = {
 	{name = "sleepy",	anim = {anim="emote_sleepy"},	item = "emote_sleepy"},
