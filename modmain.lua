@@ -48,7 +48,8 @@ local DEFAULT_EMOTES = {
 --These emotes are unlocked by certain cosmetic Steam/skin items
 local EMOTE_ITEMS = {
 	{name = "sleepy",	anim = {anim="emote_sleepy"},	item = "emote_sleepy"},
-	{name = "yawn",		anim = {anim="emote_yawn"},	    item = "emote_yawn"},
+	{name = "yawn",		anim = {anim="emote_yawn"},		item = "emote_yawn"},
+	{name = "swoon",	anim = {anim="emote_swoon"},	item = "emote_swoon"},
 }
 
 --Checking for other emote mods
@@ -128,6 +129,8 @@ local function BuildEmoteSets()
 	for _,item in pairs(EMOTE_ITEMS) do
 		if GLOBAL.TheInventory:CheckOwnership(item.item) then
 			table.insert(EMOTES, item)
+		else
+			print("We don't have the emote item:", item.item)
 		end
 	end
 

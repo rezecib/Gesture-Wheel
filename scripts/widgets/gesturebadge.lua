@@ -58,6 +58,10 @@ local positions = {
 		xyscale = 0.8,
 		offsety = -32,
 	},
+	emote_swoon = {
+		offsetx = -5,
+		offsety = -32,
+	},
 	
 	-- party dance mod exceptions
 	powerup = { --buffed
@@ -141,16 +145,14 @@ local GestureBadge = Class(Widget, function(self, prefab, emotename, emote, imag
 		self.puppet.animstate:SetBank("wilson")
 		self.puppet.animstate:Hide("ARM_carry")
 		
-		--Inflate other characters; Wilson needs to be smaller because of his huge hair
-		local wilsonoffsety = 0
-		local wilsonxyscale = 1
-		if self.prefabname ~= "wilson" and not anim:find("mime") then
-			wilsonoffsety = 5
-			wilsonxyscale = 1.1
-		end
 		local position = positions[anim]
-		local offsety = position.offsety + wilsonoffsety
-		local xyscale = position.xyscale * wilsonxyscale
+		local offsety = position.offsety
+		local xyscale = position.xyscale
+		--Inflate other characters; Wilson needs to be smaller because of his huge hair
+		if self.prefabname ~= "wilson" and not anim:find("mime") then
+			offsety = offsety + 5
+			xyscale = xyscale * 1.1
+		end
 		self.puppet:SetScale(xyscale)
 		self.puppet:SetPosition(position.offsetx, offsety, 0)
 		self.puppet.animstate:SetPercent(anim, position.percent)
