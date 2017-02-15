@@ -129,8 +129,6 @@ local function BuildEmoteSets()
 	for _,item in pairs(EMOTE_ITEMS) do
 		if GLOBAL.TheInventory:CheckOwnership(item.item) then
 			table.insert(EMOTES, item)
-		else
-			print("We don't have the emote item:", item.item)
 		end
 	end
 
