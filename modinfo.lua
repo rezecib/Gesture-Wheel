@@ -57,6 +57,7 @@ local eight_options =
 	{description = "/squat",	data = "squat"},
 	{description = "/sleepy",	data = "sleepy"},
 	{description = "/yawn",		data = "yawn"},
+	{description = "/swoon",	data = "swoon"},
 }
 
 configuration_options =
