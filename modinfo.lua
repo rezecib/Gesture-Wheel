@@ -1,7 +1,7 @@
 name = "Gesture Wheel"
 description = "Adds a wheel selection interface for emotes, making it easier to emote."
 author = "rezecib"
-version = "1.6.1"
+version = "1.6.2"
 
 forumthread = "/files/file/980-dst-gesture-wheel/"
 
@@ -130,7 +130,7 @@ configuration_options =
 		label = "Right Emote",
 		hover = "This will be shown directly to the right.",
 		options = eight_options,
-		default = "hi",
+		default = "wave",
 	},    
 	{
 		name = "EIGHT2",
