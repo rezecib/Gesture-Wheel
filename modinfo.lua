@@ -1,7 +1,7 @@
 name = "Gesture Wheel"
 description = "Adds a wheel selection interface for emotes, making it easier to emote."
 author = "rezecib"
-version = "1.6.2"
+version = "1.6.3"
 
 forumthread = "/files/file/980-dst-gesture-wheel/"
 
@@ -74,7 +74,7 @@ configuration_options =
 		label = "Wheel Size",
 		hover = "How big to make the wheel.",
 		options = scalefactors,
-		default = 1, --G
+		default = 1,
 	},    
 	{
 		name = "IMAGETEXT",
@@ -98,22 +98,28 @@ configuration_options =
 	{
 		name = "RESTORECURSOR",
 		label = "Restore cursor position",
+		hover = "Where to move the mouse before and after selection if the wheel is centered.",
 		options = {
-			{description = "Relative", data = 3},
-			{description = "Absolute", data = 2},
-			{description = "Off", data = 1},
+			{description = "Relative", data = 3,
+				hover = "Puts the cursor where it would be if it hadn't\nbeen moved to the center of the wheel."},
+			{description = "Absolute", data = 2, 
+				hover = "Puts the cursor where it was before the wheel,\nignoring the movements to select an emote."},
+			{description = "Center", data = 1,
+				hover = "Only centers the cursor in the wheel,\nand doesn't move it after selecting."},
+			{description = "Off", data = 0,
+				hover = "Doesn't move the cursor ever.\nAn emote may be already selected based on where the cursor was before."},
 		},
 		default = 3,
 	},    
 	{
-		name = "LEFTSTICK",
+		name = "RIGHTSTICK",
 		label = "Controller Stick",
 		hover = "Which controller analog stick to use to select emotes on the wheel.",
 		options = {
-			{description = "Left", data = true},
-			{description = "Right", data = false},
+			{description = "Left", data = false},
+			{description = "Right", data = true},
 		},
-		default = true,
+		default = false,
 	},    
 	{
 		name = "ONLYEIGHT",

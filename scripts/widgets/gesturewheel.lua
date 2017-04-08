@@ -1,11 +1,11 @@
 local Widget = require "widgets/widget"
 local GestureBadge = require("widgets/gesturebadge")
 
-local GestureWheel = Class(Widget, function(self, emote_sets, image, text, leftstick)
+local GestureWheel = Class(Widget, function(self, emote_sets, image, text, rightstick)
     Widget._ctor(self, "GestureWheel")
     self.isFE = false
     self:SetClickable(false)
-	self.useleftstick = leftstick
+	self.userightstick = rightstick
 
     self.root = self:AddChild(Widget("root"))
 
@@ -56,15 +56,15 @@ local function GetControllerDistance(self, gesture, direction)
 	return dx*dx + dy*dy
 end
 
-local function GetControllerTilt(left)
+local function GetControllerTilt(right)
 	local xdir = 0
 	local ydir = 0
-	if left then
-		xdir = TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT)
-		ydir = TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)
-	else
+	if right then
 		xdir = TheInput:GetAnalogControlValue(CONTROL_INVENTORY_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_INVENTORY_LEFT)
 		ydir = TheInput:GetAnalogControlValue(CONTROL_INVENTORY_UP) - TheInput:GetAnalogControlValue(CONTROL_INVENTORY_DOWN)
+	else
+		xdir = TheInput:GetAnalogControlValue(CONTROL_MOVE_RIGHT) - TheInput:GetAnalogControlValue(CONTROL_MOVE_LEFT)
+		ydir = TheInput:GetAnalogControlValue(CONTROL_MOVE_UP) - TheInput:GetAnalogControlValue(CONTROL_MOVE_DOWN)
 	end
 	return xdir, ydir
 end
@@ -74,7 +74,7 @@ function GestureWheel:OnUpdate()
 	local mingesture = nil
 	
 	if TheInput:ControllerAttached() then
-		local xdir, ydir = GetControllerTilt(self.useleftstick)
+		local xdir, ydir = GetControllerTilt(self.userightstick)
 		local deadzone = .5
 		if math.abs(xdir) >= deadzone or math.abs(ydir) >= deadzone then
 			local dir = Vector3(xdir, ydir, 0):GetNormalized()

@@ -3,19 +3,30 @@ Assets = {
 	Asset("ATLAS", "images/status_bg.xml"),
 }
 
-KEYBOARDTOGGLEKEY = GetModConfigData("KEYBOARDTOGGLEKEY")
+KEYBOARDTOGGLEKEY = GetModConfigData("KEYBOARDTOGGLEKEY") or "G"
 if type(KEYBOARDTOGGLEKEY) == "string" then
 	KEYBOARDTOGGLEKEY = KEYBOARDTOGGLEKEY:lower():byte()
 end
-local SCALEFACTOR = GetModConfigData("SCALEFACTOR")
+local SCALEFACTOR = GetModConfigData("SCALEFACTOR") or 1
 local CENTERWHEEL = GetModConfigData("CENTERWHEEL")
-local RESTORECURSOROPTS = GetModConfigData("RESTORECURSOR")
-local RESTORECURSOR = RESTORECURSOROPTS and RESTORECURSOROPTS > 1
-local ADJUSTCURSOR = RESTORECURSOROPTS and RESTORECURSOROPTS > 2
-local IMAGETEXT = GetModConfigData("IMAGETEXT")
-local SHOWIMAGE = not IMAGETEXT or IMAGETEXT > 1
-local SHOWTEXT = not IMAGETEXT or IMAGETEXT%2 == 1
-local LEFTSTICK = GetModConfigData("LEFTSTICK")
+--Gross way of handling the default behavior, but I don't see a better option
+if CENTERWHEEL == nil then CENTERWHEEL = true end
+local RESTORECURSOROPTIONS = GetModConfigData("RESTORECURSOR") or 3
+if not CENTERWHEEL and RESTORECURSOROPTIONS == 3 then
+	--if the wheel isn't centered, then restoring basically just puts it where it was already
+	-- so turn that off to prevent jitter
+	RESTORECURSOROPTIONS = 0
+end
+--0 means don't center or restore, even if the wheel is centered
+local CENTERCURSOR  = CENTERWHEEL and (RESTORECURSOROPTIONS >= 1)
+local RESTORECURSOR = RESTORECURSOROPTIONS >= 2
+local ADJUSTCURSOR  = RESTORECURSOROPTIONS >= 3
+local IMAGETEXT = GetModConfigData("IMAGETEXT") or 2
+local SHOWIMAGE = IMAGETEXT > 1
+local SHOWTEXT = IMAGETEXT%2 == 1
+local RIGHTSTICK = GetModConfigData("RIGHTSTICK")
+--Backward-compatibility if they had changed the option
+if GetModConfigData("LEFTSTICK") == false then RIGHTSTICK = true end
 local ONLYEIGHT = GetModConfigData("ONLYEIGHT")
 local EIGHTS = {}
 for i=1,8 do
@@ -138,6 +149,7 @@ local function BuildEmoteSets()
 			for i,w in ipairs(EMOTES) do
 				if v == w.name then
 					table.insert(EIGHTEMOTES, w)
+					break
 				end
 			end
 		end
@@ -176,8 +188,8 @@ end
 
 local function ResetTransform()
 	local screenwidth, screenheight = GLOBAL.TheSim:GetScreenSize()
-	centerx = screenwidth/2
-	centery = screenheight/2
+	centerx = math.floor(screenwidth/2 + 0.5)
+	centery = math.floor(screenheight/2 + 0.5)
 	local screenscalefactor = math.min(screenwidth/1920, screenheight/1080) --normalize by my testing setup, 1080p
 	STARTSCALE = 0.25*SCALEFACTOR*screenscalefactor
 	NORMSCALE = SCALEFACTOR*screenscalefactor
@@ -205,8 +217,11 @@ local function ShowGestureWheel()
 		cursorx, cursory = GLOBAL.TheInputProxy:GetOSCursorPos()
 	end
 	
-	if CENTERWHEEL then
+	if CENTERCURSOR then
 		GLOBAL.TheInputProxy:SetOSCursorPos(centerx, centery)
+	end
+	if CENTERWHEEL then
+		controls.gesturewheel:SetPosition(centerx, centery, 0)
 	else
 		controls.gesturewheel:SetPosition(GLOBAL.TheInput:GetScreenPosition():Get())
 	end
@@ -252,7 +267,7 @@ local function AddGestureWheel(self)
 	if controls.gesturewheel then
 		controls.gesturewheel:Kill()
 	end
-	controls.gesturewheel = controls:AddChild(GestureWheel(emote_sets, SHOWIMAGE, SHOWTEXT, LEFTSTICK))
+	controls.gesturewheel = controls:AddChild(GestureWheel(emote_sets, SHOWIMAGE, SHOWTEXT, RIGHTSTICK))
 	ResetTransform()
 	controls.gesturewheel:Hide()
 	
