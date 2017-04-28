@@ -40,12 +40,12 @@ end
 --Constants for the emote definitions; name is used for display text, anim for puppet animation
 
 local DEFAULT_EMOTES = {
-	{name = "bye",		anim = {anim={"emoteXL_waving4", "emoteXL_waving3"}, randomanim=true}},
+	{name = "rude",		anim = {anim="emoteXL_waving4", randomanim=true}},
 	{name = "annoyed",	anim = {anim="emoteXL_annoyed"}},
 	{name = "sad",		anim = {anim="emoteXL_sad", fx="tears", fxoffset={0.25,3.25,0}, fxdelay=17*GLOBAL.FRAMES}},
 	{name = "joy",		anim = {anim="research", fx=false}},
 	{name = "facepalm",	anim = {anim="emoteXL_facepalm"}},
-	{name = "wave",		anim = {anim={"emoteXL_waving1", "emoteXL_waving2"}, randomanim=true}},
+	{name = "wave",		anim = {anim={"emoteXL_waving1", "emoteXL_waving2", "emoteXL_waving3"}, randomanim=true}},
 	{name = "dance",	anim = { anim = { "emoteXL_pre_dance0", "emoteXL_loop_dance0" }, loop = true, fx = false, beaver = true }},
 	{name = "pose",		anim = {anim = "emote_strikepose", zoom = true, soundoverride = "/pose"}},
 	{name = "kiss",		anim = {anim="emoteXL_kiss"}},
