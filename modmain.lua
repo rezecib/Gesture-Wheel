@@ -71,12 +71,12 @@ local EMOTE_ITEMS = {
 }
 
 --Checking for other emote mods
-local PARTY_ADDED = false--GLOBAL.KnownModIndex:IsModEnabled("workshop-437521942")
-local OLD_ADDED = false--GLOBAL.KnownModIndex:IsModEnabled("workshop-732180082")
--- for k,v in pairs(GLOBAL.KnownModIndex:GetModsToLoad()) do
-	-- PARTY_ADDED = PARTY_ADDED or v == "workshop-437521942"
-	-- OLD_ADDED = OLD_ADDED or v == "workshop-732180082"
--- end
+local PARTY_ADDED = GLOBAL.KnownModIndex:IsModEnabled("workshop-437521942")
+local OLD_ADDED = GLOBAL.KnownModIndex:IsModEnabled("workshop-732180082")
+for k,v in pairs(GLOBAL.KnownModIndex:GetModsToLoad()) do
+	PARTY_ADDED = PARTY_ADDED or v == "workshop-437521942"
+	OLD_ADDED = OLD_ADDED or v == "workshop-732180082"
+end
 
 local PARTY_EMOTES = nil
 if PARTY_ADDED and not ONLYEIGHT then
