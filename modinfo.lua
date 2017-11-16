@@ -1,7 +1,7 @@
 name = "Gesture Wheel"
 description = "Adds a wheel selection interface for emotes, making it easier to emote."
 author = "rezecib"
-version = "1.6.4"
+version = "1.7.0"
 
 forumthread = "/files/file/980-dst-gesture-wheel/"
 
@@ -41,8 +41,9 @@ end
 --TODO: Make sure this stays in sync with the modmain and emote file
 local eight_options =
 {
+	-- Default emotes
 	{description = "/wave",		data = "wave"},
-	{description = "/bye",		data = "bye"},
+	{description = "/rude",		data = "rude"},
 	{description = "/happy",	data = "happy"},
 	{description = "/angry",	data = "angry"},
 	{description = "/sad",		data = "sad"},
@@ -55,9 +56,21 @@ local eight_options =
 	{description = "/pose",		data = "pose"},
 	{description = "/sit",		data = "sit"},
 	{description = "/squat",	data = "squat"},
+	
+	-- Unlockable emotes
 	{description = "/sleepy",	data = "sleepy"},
 	{description = "/yawn",		data = "yawn"},
 	{description = "/swoon",	data = "swoon"},
+	{description = "/chicken",	data = "chicken"},
+	{description = "/robot",	data = "robot"},
+	{description = "/step",		data = "step"},
+	{description = "/fistshake",data = "fistshake"},
+	{description = "/flex",		data = "flex"},
+	{description = "/impatient",data = "impatient"},
+	{description = "/cheer",	data = "cheer"},
+	{description = "/laugh",	data = "laugh"},
+	{description = "/shrug",	data = "shrug"},
+	{description = "/slowclap",	data = "slowclap"},
 }
 
 configuration_options =
@@ -124,7 +137,8 @@ configuration_options =
 	{
 		name = "ONLYEIGHT",
 		label = "Limit to 8",
-		hover = "Limits the wheel to 8 emotes, determined by the selections in the options below.",
+		hover = "Limits the wheel to 8 emotes, determined by the selections in the options below."
+				.."\nNote that options after /squat need to be unlocked by emote items.",
 		options = {
 			{description = "On", data = true},
 			{description = "Off", data = false},
@@ -164,7 +178,7 @@ configuration_options =
 		label = "Left Emote",
 		hover = "This will be shown directly to the left.",
 		options = eight_options,
-		default = "bye",
+		default = "rude",
 	},    
 	{
 		name = "EIGHT6",

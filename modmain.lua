@@ -1,6 +1,6 @@
 Assets = {
-	Asset("IMAGE", "images/status_bg.tex"),
-	Asset("ATLAS", "images/status_bg.xml"),
+	Asset("IMAGE", "images/gesture_bg.tex"),
+	Asset("ATLAS", "images/gesture_bg.xml"),
 }
 
 KEYBOARDTOGGLEKEY = GetModConfigData("KEYBOARDTOGGLEKEY") or "G"
@@ -27,14 +27,11 @@ local SHOWTEXT = IMAGETEXT%2 == 1
 local RIGHTSTICK = GetModConfigData("RIGHTSTICK")
 --Backward-compatibility if they had changed the option
 if GetModConfigData("LEFTSTICK") == false then RIGHTSTICK = true end
+-- ONLYEIGHT isn't compatible with multiple rings; it will disable Party and Old emotes
 local ONLYEIGHT = GetModConfigData("ONLYEIGHT")
 local EIGHTS = {}
 for i=1,8 do
 	EIGHTS[i] = GetModConfigData("EIGHT"..i)
-end
-
-local function GetTargetRadius(num_emotes)
-	return 70*num_emotes / math.pi
 end
 
 --Constants for the emote definitions; name is used for display text, anim for puppet animation
@@ -54,27 +51,39 @@ local DEFAULT_EMOTES = {
 	{name = "angry",	anim = {anim="emoteXL_angry"}},
 	{name = "sit",		anim = {anim={{"emote_pre_sit2", "emote_loop_sit2"}, {"emote_pre_sit4", "emote_loop_sit4"}}, randomanim = true, loop = true, fx = false}},
 	{name = "squat",	anim = {anim={{"emote_pre_sit1", "emote_loop_sit1"}, {"emote_pre_sit3", "emote_loop_sit3"}}, randomanim = true, loop = true, fx = false}},
-	--TODO: make sure this list stays up to date
+	-- TODO: make sure this list stays up to date
 }
 --These emotes are unlocked by certain cosmetic Steam/skin items
 local EMOTE_ITEMS = {
-	{name = "sleepy",	anim = {anim="emote_sleepy"},	item = "emote_sleepy"},
-	{name = "yawn",		anim = {anim="emote_yawn"},		item = "emote_yawn"},
-	{name = "swoon",	anim = {anim="emote_swoon"},	item = "emote_swoon"},
+	{name = "sleepy",	anim = {anim="emote_sleepy"},		item = "emote_sleepy"},
+	{name = "yawn",		anim = {anim="emote_yawn"},			item = "emote_yawn"},
+	{name = "swoon",	anim = {anim="emote_swoon"},		item = "emote_swoon"},
+	{name = "chicken",	anim = {anim="emoteXL_loop_dance6"},item = "emote_dance_chicken"},
+	{name = "robot",	anim = {anim="emoteXL_loop_dance8"},item = "emote_dance_robot"},
+	{name = "step",		anim = {anim="emoteXL_loop_dance7"},item = "emote_dance_step"},
+	{name = "fistshake",anim = {anim="emote_fistshake"},	item = "emote_fistshake"},
+	{name = "flex",		anim = {anim="emote_flex"},			item = "emote_flex"},
+	{name = "impatient",anim = {anim="emote_impatient"},	item = "emote_impatient"},
+	{name = "cheer",	anim = {anim="emote_jumpcheer"},	item = "emote_jumpcheer"},
+	{name = "laugh",	anim = {anim="emote_laugh"},		item = "emote_laugh"},
+	{name = "shrug",	anim = {anim="emote_shrug"},		item = "emote_shrug"},
+	{name = "slowclap",	anim = {anim="emote_slowclap"},		item = "emote_slowclap"},
 }
 
 --Checking for other emote mods
-local PARTY_ADDED = GLOBAL.KnownModIndex:IsModEnabled("workshop-437521942")
-local OLD_ADDED = GLOBAL.KnownModIndex:IsModEnabled("workshop-732180082")
-for k,v in pairs(GLOBAL.KnownModIndex:GetModsToLoad()) do
-	PARTY_ADDED = PARTY_ADDED or v == "workshop-437521942"
-	OLD_ADDED = OLD_ADDED or v == "workshop-732180082"
-end
+local PARTY_ADDED = false--GLOBAL.KnownModIndex:IsModEnabled("workshop-437521942")
+local OLD_ADDED = false--GLOBAL.KnownModIndex:IsModEnabled("workshop-732180082")
+-- for k,v in pairs(GLOBAL.KnownModIndex:GetModsToLoad()) do
+	-- PARTY_ADDED = PARTY_ADDED or v == "workshop-437521942"
+	-- OLD_ADDED = OLD_ADDED or v == "workshop-732180082"
+-- end
 
-local PARTY_EMOTES = {}
-if PARTY_ADDED then
-	ONLYEIGHT = false -- this isn't compatible with double-ring
-	PARTY_EMOTES = { emotes = {
+local PARTY_EMOTES = nil
+if PARTY_ADDED and not ONLYEIGHT then
+	PARTY_EMOTES = 
+		{
+			emotes = 
+			{
 				{name = "dance2",	anim = {anim = "idle_onemanband1_loop"}},
 				{name = "dance3",	anim = {anim = "idle_onemanband2_loop"}},
 				{name = "run",		anim = {anim = {"run_pre", "run_loop", "run_loop", "run_loop", "run_pst"}}},
@@ -93,15 +102,17 @@ if PARTY_ADDED then
 				{name = "dead",		anim = {anim = {"death", "wakeup"}}},
 				{name = "spooked",	anim = {anim = "distress_loop"}},
 			},
+			radius = 375,
+			color = GLOBAL.PLAYERCOLOURS.FUSCHIA,
 		}
-	--Will need to be adjusted if number of emotes changes; currently evaluates to ~399
-	PARTY_EMOTES.radius = GetTargetRadius(#PARTY_EMOTES.emotes) + 20
 end
 
-local OLD_EMOTES = {}
-if OLD_ADDED then
-	ONLYEIGHT = false -- this isn't compatible with double-ring
-	OLD_EMOTES = { emotes = {
+local OLD_EMOTES = nil
+if OLD_ADDED and not ONLYEIGHT then
+	OLD_EMOTES = 
+		{
+			emotes = 
+			{
 				{name = "angry2",	anim = {anim = "emote_angry"}},
 				{name = "annoyed2",	anim = {anim = "emote_annoyed_palmdown"}},
 				{name = "gdi",		anim = {anim = "emote_annoyed_facepalm"}},
@@ -113,9 +124,9 @@ if OLD_ADDED then
 				{name = "sigh",		anim = {anim = "emote_sad"}},
 				{name = "heya",		anim = {anim = "emote_waving"}},
 			},
+			radius = 175,
+			color = GLOBAL.DARKGREY,
 		}
-	--Will need to be adjusted if number of emotes changes; currently evaluates to ~173
-	OLD_EMOTES.radius = GetTargetRadius(#OLD_EMOTES.emotes) - 50
 end
 
 local emote_sets = {}
@@ -123,45 +134,62 @@ local emote_sets = {}
 local function BuildEmoteSets()
 	emote_sets = {}
 	
-	if PARTY_ADDED then
+	if PARTY_EMOTES ~= nil then
 		table.insert(emote_sets, PARTY_EMOTES)
 	end
 
-	if OLD_ADDED then
+	if OLD_EMOTES ~= nil then
 		table.insert(emote_sets, OLD_EMOTES)
 	end
 	
 	--Add in all the default emotes
 	local EMOTES = {}
-	for _,v in ipairs(DEFAULT_EMOTES) do
-		table.insert(EMOTES, v)
-	end
 	--Check if we have some of the emote items
+	local EMOTE_ITEMS_OWNED = {}
+	local TheInventory = GLOBAL.TheInventory
 	for _,item in pairs(EMOTE_ITEMS) do
-		if GLOBAL.TheInventory:CheckOwnership(item.item) then
-			table.insert(EMOTES, item)
+		if TheInventory:CheckOwnership(item.item) then
+			table.insert(EMOTE_ITEMS_OWNED, item)
 		end
 	end
 
 	if ONLYEIGHT then
-		local EIGHTEMOTES = {}
-		for i,v in ipairs(EIGHTS) do
-			for i,w in ipairs(EMOTES) do
-				if v == w.name then
-					table.insert(EIGHTEMOTES, w)
-					break
-				end
+		-- Build a lookup table for emotes that are allowable here
+		EIGHTABLE_EMOTES = {}
+		for _,e in pairs(DEFAULT_EMOTES) do
+			EIGHTABLE_EMOTES[e.name] = e
+		end
+		for _,e in pairs(EMOTE_ITEMS_OWNED) do
+			EIGHTABLE_EMOTES[e.name] = e
+		end
+		for _,v in ipairs(EIGHTS) do
+			table.insert(EMOTES, EIGHTABLE_EMOTES[v])
+		end
+	else
+		for _,v in ipairs(DEFAULT_EMOTES) do
+			table.insert(EMOTES, v)
+		end
+		-- If we have only two emotes, put them in the normal wheel; a 2-item wheel is... not round
+		-- Otherwise, we can make an inner wheel for them
+		if #EMOTE_ITEMS_OWNED > 2 then
+			table.insert(emote_sets, {
+				emotes = EMOTE_ITEMS_OWNED,
+				radius = 260, -- will need to be adjusted if number of emotes changes
+				color = GLOBAL.PLAYERCOLOURS.PERU,
+			})
+		elseif #EMOTE_ITEMS_OWNED > 0 then
+			for _,v in pairs(EMOTE_ITEMS_OWNED) do
+				table.insert(EMOTES, v)
 			end
 		end
-		EMOTES = EIGHTEMOTES
 	end
 	
-	--Will need to be adjusted if number of emotes changes; currently evaluates to ~282
-	table.insert(emote_sets, {
+	table.insert(
+		emote_sets, 
+		{
 			emotes = EMOTES,
-			radius = ONLYEIGHT and GetTargetRadius(#EMOTES)
-								-- We want it to be the same radius regardless of how many you unlocked
-								or GetTargetRadius(#DEFAULT_EMOTES + #EMOTE_ITEMS)-30
+			radius = ONLYEIGHT and 250 or 325,
+			color = GLOBAL.BROWN,
 		}
 	)
 end
@@ -177,8 +205,8 @@ local centerx = 0
 local centery = 0
 local controls = nil
 local keydown = false
-local STARTSCALE = nil
 local NORMSCALE = nil
+local STARTSCALE = nil
 
 local function IsDefaultScreen()
 	local screen = GLOBAL.TheFrontEnd:GetActiveScreen()
@@ -191,8 +219,9 @@ local function ResetTransform()
 	centerx = math.floor(screenwidth/2 + 0.5)
 	centery = math.floor(screenheight/2 + 0.5)
 	local screenscalefactor = math.min(screenwidth/1920, screenheight/1080) --normalize by my testing setup, 1080p
-	STARTSCALE = 0.25*SCALEFACTOR*screenscalefactor
+	controls.gesturewheel.screenscalefactor = SCALEFACTOR*screenscalefactor
 	NORMSCALE = SCALEFACTOR*screenscalefactor
+	STARTSCALE = 0
 	controls.gesturewheel:SetPosition(centerx, centery, 0)
 	controls.gesturewheel.inst.UITransform:SetScale(STARTSCALE, STARTSCALE, 1)
 end

@@ -6,6 +6,7 @@ local GestureWheel = Class(Widget, function(self, emote_sets, image, text, right
     self.isFE = false
     self:SetClickable(false)
 	self.userightstick = rightstick
+	self.screenscalefactor = 1
 
     self.root = self:AddChild(Widget("root"))
 
@@ -13,27 +14,32 @@ local GestureWheel = Class(Widget, function(self, emote_sets, image, text, right
     self.icon:SetScale(1)
 	self.gestures = {}
 	
-	local function build_wheel(emotes, radius)
+	local function build_wheel(emotes, radius, color, scale)
 		local count = #emotes
-		local dist = radius
+		local dist = radius * scale
 		self.radius = math.max(self.radius or 0, dist)
 		local delta = 2*math.pi/count
 		local theta = 0
 		for i,v in ipairs(emotes) do
-			self.gestures[v.name] = self.icon:AddChild(GestureBadge(ThePlayer.prefab, v.name, v.anim, image, text))
+			self.gestures[v.name] = self.icon:AddChild(GestureBadge(ThePlayer.prefab, v.name, v.anim, image, text, color))
 			self.gestures[v.name]:SetPosition(dist*math.cos(theta),dist*math.sin(theta), 0)
+			self.gestures[v.name]:SetScale(scale)
 			theta = theta + delta
 		end
 	end
+	-- Sort the emote sets in order of decreasing radius
+	table.sort(emote_sets, function(a,b) return a.radius > b.radius end)
+	local scale = 1
 	for _,emote_set in ipairs(emote_sets) do
-		build_wheel(emote_set.emotes, emote_set.radius)
+		build_wheel(emote_set.emotes, emote_set.radius, emote_set.color, scale)
+		scale = scale * 0.85
 	end
 end)
 
 local function GetMouseDistance(self, gesture, mouse)
 	local pos = self:GetPosition()
 	if gesture ~= nil then
-		local offset = gesture:GetPosition()
+		local offset = gesture:GetPosition()*self.screenscalefactor
 		pos.x = pos.x + offset.x
 		pos.y = pos.y + offset.y
 	end

@@ -118,7 +118,7 @@ for anim,position in pairs(positions) do
 	setmetatable(position, metaposition)
 end
 
-local GestureBadge = Class(Widget, function(self, prefab, emotename, emote, image, text)
+local GestureBadge = Class(Widget, function(self, prefab, emotename, emote, image, text, color)
 	Widget._ctor(self, "GestureBadge")
 	self.isFE = false
 	self:SetClickable(false)
@@ -128,6 +128,7 @@ local GestureBadge = Class(Widget, function(self, prefab, emotename, emote, imag
 	self.icon = self.root:AddChild(Widget("target"))
 	self.icon:SetScale(SMALLSCALE)
 	self.expanded = false
+	self.color = color
 
 	if not table.contains(DST_CHARACTERLIST, prefab) and not table.contains(MODCHARACTERLIST, prefab) then
 		self.prefabname = "wilson"
@@ -177,14 +178,14 @@ local GestureBadge = Class(Widget, function(self, prefab, emotename, emote, imag
 			self.fx2:SetPosition(position.offsetx + emote.fxoffset[1]*m, offsety + emote.fxoffset[2]*m - 50, emote.fxoffset[3]*m)
 		end
 		self.puppetframe = self.icon:AddChild(Image(ATLAS, "avatar_frame_white.tex"))
-		self.puppetframe:SetTint(unpack(BROWN))
+		self.puppetframe:SetTint(unpack(color))
 	end
 	
 	if text then
-		self.bg = self.icon:AddChild(Image("images/status_bg.xml", "status_bg.tex"))
+		self.bg = self.icon:AddChild(Image("images/gesture_bg.xml", "gesture_bg.tex"))
 		self.bg:SetScale(.11*(emotename:len()+1),.5,0)
 		if image then self.bg:SetPosition(-.5,-34,0) end
-		self.bg:SetTint(unpack(DEFAULT_PLAYER_COLOUR))
+		self.bg:SetTint(unpack(color))
 
 		self.text = self.icon:AddChild(Text(NUMBERFONT, 28))
 		self.text:SetHAlign(ANCHOR_MIDDLE)
@@ -226,8 +227,8 @@ function GestureBadge:Contract()
 	if not self.expanded then return end
 	self.expanded = false
 	self.icon:ScaleTo(LARGESCALE, SMALLSCALE, .25)
-	if self.puppetframe then self.puppetframe:SetTint(unpack(BROWN)) end
-	if self.text then self.bg:SetTint(unpack(DEFAULT_PLAYER_COLOUR)) end
+	if self.puppetframe then self.puppetframe:SetTint(unpack(self.color)) end
+	if self.text then self.bg:SetTint(unpack(self.color)) end
 	self:MoveToBack()
 end
 
