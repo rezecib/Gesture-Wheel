@@ -82,6 +82,7 @@ local PARTY_EMOTES = nil
 if PARTY_ADDED and not ONLYEIGHT then
 	PARTY_EMOTES = 
 		{
+			name = "party",
 			emotes = 
 			{
 				{name = "dance2",	anim = {anim = "idle_onemanband1_loop"}},
@@ -111,6 +112,7 @@ local OLD_EMOTES = nil
 if OLD_ADDED and not ONLYEIGHT then
 	OLD_EMOTES = 
 		{
+			name = "old",
 			emotes = 
 			{
 				{name = "angry2",	anim = {anim = "emote_angry"}},
@@ -173,6 +175,7 @@ local function BuildEmoteSets()
 		-- Otherwise, we can make an inner wheel for them
 		if #EMOTE_ITEMS_OWNED > 2 then
 			table.insert(emote_sets, {
+				name = "unlockable",
 				emotes = EMOTE_ITEMS_OWNED,
 				radius = 260, -- will need to be adjusted if number of emotes changes
 				color = GLOBAL.PLAYERCOLOURS.PERU,
@@ -187,6 +190,7 @@ local function BuildEmoteSets()
 	table.insert(
 		emote_sets, 
 		{
+			name = "default",
 			emotes = EMOTES,
 			radius = ONLYEIGHT and 250 or 325,
 			color = GLOBAL.BROWN,
@@ -204,6 +208,7 @@ local cursory = 0
 local centerx = 0
 local centery = 0
 local controls = nil
+local gesturewheel = nil
 local keydown = false
 local NORMSCALE = nil
 local STARTSCALE = nil
@@ -219,14 +224,14 @@ local function ResetTransform()
 	centerx = math.floor(screenwidth/2 + 0.5)
 	centery = math.floor(screenheight/2 + 0.5)
 	local screenscalefactor = math.min(screenwidth/1920, screenheight/1080) --normalize by my testing setup, 1080p
-	controls.gesturewheel.screenscalefactor = SCALEFACTOR*screenscalefactor
+	gesturewheel.screenscalefactor = SCALEFACTOR*screenscalefactor
 	NORMSCALE = SCALEFACTOR*screenscalefactor
 	STARTSCALE = 0
-	controls.gesturewheel:SetPosition(centerx, centery, 0)
-	controls.gesturewheel.inst.UITransform:SetScale(STARTSCALE, STARTSCALE, 1)
+	gesturewheel:SetPosition(centerx, centery, 0)
+	gesturewheel.inst.UITransform:SetScale(STARTSCALE, STARTSCALE, 1)
 end
 
-local function ShowGestureWheel()
+local function ShowGestureWheel(controller_mode)
 	if keydown then return end
 	if type(GLOBAL.ThePlayer) ~= "table" or type(GLOBAL.ThePlayer.HUD) ~= "table" then return end
 	if not IsDefaultScreen() then return end
@@ -237,7 +242,7 @@ local function ShowGestureWheel()
 	ResetTransform()
 	
     if SHOWIMAGE then
-        for _,gesturebadge in pairs(controls.gesturewheel.gestures) do
+        for _,gesturebadge in pairs(gesturewheel.gestures) do
             gesturebadge:RefreshSkins()
         end
     end
@@ -250,33 +255,34 @@ local function ShowGestureWheel()
 		GLOBAL.TheInputProxy:SetOSCursorPos(centerx, centery)
 	end
 	if CENTERWHEEL then
-		controls.gesturewheel:SetPosition(centerx, centery, 0)
+		gesturewheel:SetPosition(centerx, centery, 0)
 	else
-		controls.gesturewheel:SetPosition(GLOBAL.TheInput:GetScreenPosition():Get())
+		gesturewheel:SetPosition(GLOBAL.TheInput:GetScreenPosition():Get())
 	end
-	controls.gesturewheel:Show()
-	controls.gesturewheel:ScaleTo(STARTSCALE, NORMSCALE, .25)
+	gesturewheel:SetControllerMode(controller_mode)
+	gesturewheel:Show()
+	gesturewheel:ScaleTo(STARTSCALE, NORMSCALE, .25)
 end
 
 local function HideGestureWheel(delay_focus_loss)
 	if type(GLOBAL.ThePlayer) ~= "table" or type(GLOBAL.ThePlayer.HUD) ~= "table" then return end
 	keydown = false
-	if delay_focus_loss and controls.gesturewheel.activegesture then
+	if delay_focus_loss and gesturewheel.activegesture then
 		--delay a little on controllers to prevent canceling the emote by moving
 		GLOBAL.ThePlayer:DoTaskInTime(0.5, function() SetModHUDFocus("GestureWheel", false) end)
 	else
 		SetModHUDFocus("GestureWheel", false)
 	end
 	
-	controls.gesturewheel:Hide()
-	controls.gesturewheel.inst.UITransform:SetScale(STARTSCALE, STARTSCALE, 1)
+	gesturewheel:Hide()
+	gesturewheel.inst.UITransform:SetScale(STARTSCALE, STARTSCALE, 1)
 	
 	if not IsDefaultScreen() then return end
 	
 	if RESTORECURSOR then
 		if ADJUSTCURSOR then
 			local x,y = GLOBAL.TheInputProxy:GetOSCursorPos()
-			local gx, gy = controls.gesturewheel:GetPosition():Get()
+			local gx, gy = gesturewheel:GetPosition():Get()
 			local dx, dy = x-gx, y-gy
 			cursorx = cursorx + dx
 			cursory = cursory + dy
@@ -284,8 +290,8 @@ local function HideGestureWheel(delay_focus_loss)
 		GLOBAL.TheInputProxy:SetOSCursorPos(cursorx, cursory)
 	end
 	
-	if controls.gesturewheel.activegesture then
-		GLOBAL.TheNet:SendSlashCmdToServer(controls.gesturewheel.activegesture, true)
+	if gesturewheel.activegesture then
+		GLOBAL.TheNet:SendSlashCmdToServer(gesturewheel.activegesture, true)
 	end
 end
 
@@ -293,12 +299,13 @@ local handlers_applied = false
 local function AddGestureWheel(self)
 	BuildEmoteSets() --delay this so that the account item checks are more likely to work
 	controls = self -- this just makes controls available in the rest of the modmain's functions
-	if controls.gesturewheel then
-		controls.gesturewheel:Kill()
+	if gesturewheel then
+		gesturewheel:Kill()
 	end
-	controls.gesturewheel = controls:AddChild(GestureWheel(emote_sets, SHOWIMAGE, SHOWTEXT, RIGHTSTICK))
+	gesturewheel = controls:AddChild(GestureWheel(emote_sets, SHOWIMAGE, SHOWTEXT, RIGHTSTICK))
+	controls.gesturewheel = gesturewheel
 	ResetTransform()
-	controls.gesturewheel:Hide()
+	gesturewheel:Hide()
 	
 	if not handlers_applied then
 		-- Keyboard controls
@@ -311,12 +318,36 @@ local function AddGestureWheel(self)
 		-- CONTROL_MENU_MISC_4 is the right stick click
 		GLOBAL.TheInput:AddControlHandler(GLOBAL.CONTROL_MENU_MISC_3, function(down)
 			if down then
-				ShowGestureWheel()
+				ShowGestureWheel(true)
 			else
 				HideGestureWheel(true)
 			end
 		end)
-				
+		
+		-- this is just a lock system to make it only register one shift at a time
+		local rotate_left_free = true
+		GLOBAL.TheInput:AddControlHandler(GLOBAL.CONTROL_ROTATE_LEFT, function(down)
+			if down then
+				if keydown and rotate_left_free then
+					gesturewheel:SwitchWheel(-1)
+					rotate_left_free = false
+				end
+			else
+				rotate_left_free = true
+			end
+		end)
+		local rotate_right_free = true
+		GLOBAL.TheInput:AddControlHandler(GLOBAL.CONTROL_ROTATE_RIGHT, function(down)
+			if down then
+				if keydown and rotate_right_free then
+					gesturewheel:SwitchWheel(1)
+					rotate_right_free = false
+				end
+			else
+				rotate_right_free = true
+			end
+		end)
+		
 		handlers_applied = true
 	end
 end

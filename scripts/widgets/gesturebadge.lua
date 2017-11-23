@@ -119,7 +119,7 @@ for anim,position in pairs(positions) do
 end
 
 local GestureBadge = Class(Widget, function(self, prefab, emotename, emote, image, text, color)
-	Widget._ctor(self, "GestureBadge")
+	Widget._ctor(self, "GestureBadge-"..emotename)
 	self.isFE = false
 	self:SetClickable(false)
 
