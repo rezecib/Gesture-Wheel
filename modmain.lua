@@ -68,6 +68,7 @@ local EMOTE_ITEMS = {
 	{name = "laugh",	anim = {anim="emote_laugh"},		item = "emote_laugh"},
 	{name = "shrug",	anim = {anim="emote_shrug"},		item = "emote_shrug"},
 	{name = "slowclap",	anim = {anim="emote_slowclap"},		item = "emote_slowclap"},
+	{name = "carol",	anim = {anim="emote_loop_carol"},	item = "emote_carol"},
 }
 
 --Checking for other emote mods
