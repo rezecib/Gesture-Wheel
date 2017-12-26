@@ -146,7 +146,9 @@ end
 local function SetWheelAlpha(wheel, alpha)
 	for _,badge in pairs(wheel.gestures) do
 		badge:SetFadeAlpha(alpha)
-		badge.puppet.animstate:SetMultColour(1,1,1,alpha)
+		if badge.puppet ~= nil then
+			badge.puppet.animstate:SetMultColour(1,1,1,alpha)
+		end
 	end
 end
 
