@@ -62,6 +62,10 @@ local positions = {
 		offsetx = -5,
 		offsety = -32,
 	},
+	emote_loop_toast = {
+		offsetx = -12,
+		percent = 0.9,
+	},
 	
 	-- party dance mod exceptions
 	powerup = { --buffed

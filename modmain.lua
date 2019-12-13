@@ -43,7 +43,7 @@ local DEFAULT_EMOTES = {
 	{name = "joy",		anim = {anim="research", fx=false}},
 	{name = "facepalm",	anim = {anim="emoteXL_facepalm"}},
 	{name = "wave",		anim = {anim={"emoteXL_waving1", "emoteXL_waving2", "emoteXL_waving3"}, randomanim=true}},
-	{name = "dance",	anim = { anim = { "emoteXL_pre_dance0", "emoteXL_loop_dance0" }, loop = true, fx = false, beaver = true }},
+	{name = "dance",	anim = {anim ={ "emoteXL_pre_dance0", "emoteXL_loop_dance0" }, loop = true, fx = false, beaver = true }},
 	{name = "pose",		anim = {anim = "emote_strikepose", zoom = true, soundoverride = "/pose"}},
 	{name = "kiss",		anim = {anim="emoteXL_kiss"}},
 	{name = "bonesaw",	anim = {anim="emoteXL_bonesaw"}},
@@ -51,6 +51,7 @@ local DEFAULT_EMOTES = {
 	{name = "angry",	anim = {anim="emoteXL_angry"}},
 	{name = "sit",		anim = {anim={{"emote_pre_sit2", "emote_loop_sit2"}, {"emote_pre_sit4", "emote_loop_sit4"}}, randomanim = true, loop = true, fx = false}},
 	{name = "squat",	anim = {anim={{"emote_pre_sit1", "emote_loop_sit1"}, {"emote_pre_sit3", "emote_loop_sit3"}}, randomanim = true, loop = true, fx = false}},
+	{name = "toast",	anim = {anim={ "emote_pre_toast", "emote_loop_toast" }, loop = true, fx = false }},
 	-- TODO: make sure this list stays up to date
 }
 --These emotes are unlocked by certain cosmetic Steam/skin items

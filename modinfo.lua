@@ -56,6 +56,7 @@ local eight_options =
 	{description = "/pose",		data = "pose"},
 	{description = "/sit",		data = "sit"},
 	{description = "/squat",	data = "squat"},
+	{description = "/toast",	data = "toast"},
 	
 	-- Unlockable emotes
 	{description = "/sleepy",	data = "sleepy"},
