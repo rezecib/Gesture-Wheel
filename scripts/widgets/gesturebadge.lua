@@ -141,46 +141,14 @@ local GestureBadge = Class(Widget, function(self, prefab, emotename, emote, imag
 	end
 	
 	if image then
-		local anim = emote.anim
-		while type(anim) == "table" do
-			anim = anim[math.floor(#anim/(emote.loop and 1 or 2))]
-		end
 		self.puppetbg = self.icon:AddChild(Image(ATLAS, "avatar_bg.tex"))
 		self.puppet = self.icon:AddChild(SkinsPuppet())
 		self.puppet.animstate:SetBank("wilson")
 		self.puppet.animstate:Hide("ARM_carry")
 		
-		local position = positions[anim]
-		local offsety = position.offsety
-		local xyscale = position.xyscale
-		--Inflate other characters; Wilson needs to be smaller because of his huge hair
-		if self.prefabname ~= "wilson" and not anim:find("mime") then
-			offsety = offsety + 5
-			xyscale = xyscale * 1.1
-		end
-		self.puppet:SetScale(xyscale)
-		self.puppet:SetPosition(position.offsetx, offsety, 0)
-		self.puppet.animstate:SetPercent(anim, position.percent)
-		if emote.fx and emote.fx == "tears" then
-			local fxscale = xyscale/0.7*0.18
-			self.fx = self.icon:AddChild(UIAnim())
-			self.fx:GetAnimState():SetBank("tears_fx")
-			self.fx:GetAnimState():SetBuild("tears")
-			self.fx:GetAnimState():Hide("TEARS")
-			self.fx:GetAnimState():SetPercent("tears_fx", 0.2)
-			self.fx:SetScale(fxscale)
-			local m = 20
-			self.fx:SetPosition(position.offsetx + emote.fxoffset[1]*m, offsety + emote.fxoffset[2]*m, emote.fxoffset[3]*m)
-			
-			self.fx2 = self.icon:AddChild(UIAnim())
-			self.fx2:GetAnimState():SetBank("tears_fx")
-			self.fx2:GetAnimState():SetBuild("tears")
-			self.fx2:GetAnimState():Hide("TEARS")
-			self.fx2:GetAnimState():SetPercent("tears_fx", 0.2)
-			self.fx2:SetRotation(160)
-			self.fx2:SetScale(fxscale)
-			self.fx2:SetPosition(position.offsetx + emote.fxoffset[1]*m, offsety + emote.fxoffset[2]*m - 50, emote.fxoffset[3]*m)
-		end
+		self.emote = emote
+		self:ResetEmote()
+		
 		self.puppetframe = self.icon:AddChild(Image(ATLAS, "avatar_frame_white.tex"))
 		self.puppetframe:SetTint(unpack(color))
 	end
@@ -206,16 +174,62 @@ end)
 function GestureBadge:RefreshSkins()
     if not self.puppet then return end
 	local data = TheNet:GetClientTableForUser(ThePlayer.userid)
-	self.puppet:SetSkins(self.prefabname, data.base_skin,
+	self.puppet:SetSkins(
+		self.prefabname,
+		data.base_skin,
 		{	body = data.body_skin,
 			hand = data.hand_skin,
 			legs = data.legs_skin,
-			feet = data.feet_skin	})
+			feet = data.feet_skin	},
+		true)
 	--TODO: Beard? seems like there's no way to access it from clients, though...
+	self:ResetEmote()
 end
 
 function GestureBadge:GetAvatar()
 	return "avatar_"..(self.prefabname ~= "" and self.prefabname or "unknown")..".tex"
+end
+
+function GestureBadge:ResetEmote()
+	local emote = self.emote
+	local anim = emote.anim
+	while type(anim) == "table" do
+		anim = anim[math.floor(#anim/(emote.loop and 1 or 2))]
+	end
+	local position = positions[anim]
+	local offsety = position.offsety
+	local xyscale = position.xyscale
+	--Inflate other characters; Wilson needs to be smaller because of his huge hair
+	if self.prefabname ~= "wilson" and not anim:find("mime") then
+		offsety = offsety + 5
+		xyscale = xyscale * 1.1
+	end
+	self.puppet:SetScale(xyscale)
+	self.puppet:SetPosition(position.offsetx, offsety, 0)
+	self.puppet.animstate:SetPercent(anim, position.percent)
+	if emote.fx and emote.fx == "tears" then
+		local fxscale = xyscale/0.7*0.18
+		
+		if self.fx then self.fx:Kill() end
+		self.fx = self.icon:AddChild(UIAnim())
+		self.fx:GetAnimState():SetBank("tears_fx")
+		self.fx:GetAnimState():SetBuild("tears")
+		self.fx:GetAnimState():Hide("TEARS")
+		self.fx:GetAnimState():SetPercent("tears_fx", 0.2)
+		self.fx:SetScale(fxscale)
+		local m = 20
+		self.fx:SetPosition(position.offsetx + emote.fxoffset[1]*m, offsety + emote.fxoffset[2]*m, emote.fxoffset[3]*m)
+		
+		if self.fx2 then self.fx2:Kill() end
+		self.fx2 = self.icon:AddChild(UIAnim())
+		self.fx2:GetAnimState():SetBank("tears_fx")
+		self.fx2:GetAnimState():SetBuild("tears")
+		self.fx2:GetAnimState():Hide("TEARS")
+		self.fx2:GetAnimState():SetPercent("tears_fx", 0.2)
+		self.fx2:SetRotation(160)
+		self.fx2:SetScale(fxscale)
+		self.fx2:SetPosition(position.offsetx + emote.fxoffset[1]*m, offsety + emote.fxoffset[2]*m - 50, emote.fxoffset[3]*m)
+	end
 end
 
 function GestureBadge:Expand()
