@@ -212,13 +212,18 @@ local centery = 0
 local controls = nil
 local gesturewheel = nil
 local keydown = false
+local using_gesture_wheel = false
 local NORMSCALE = nil
 local STARTSCALE = nil
 
-local function IsDefaultScreen()
+local function CanUseGestureWheel()
 	local screen = GLOBAL.TheFrontEnd:GetActiveScreen()
-	return ((screen and type(screen.name) == "string") and screen.name or ""):find("HUD") ~= nil
-		and not(GLOBAL.ThePlayer.HUD:IsControllerCraftingOpen() or GLOBAL.ThePlayer.HUD:IsControllerInventoryOpen())
+	screen = (screen and type(screen.name) == "string") and screen.name or ""
+	if screen:find("HUD") == nil or not GLOBAL.ThePlayer then
+		return false
+	end
+	local full_enabled, soft_enabled = GLOBAL.ThePlayer.components.playercontroller:IsEnabled()
+	return full_enabled or soft_enabled or using_gesture_wheel
 end
 
 local function ResetTransform()
@@ -236,10 +241,11 @@ end
 local function ShowGestureWheel(controller_mode)
 	if keydown then return end
 	if type(GLOBAL.ThePlayer) ~= "table" or type(GLOBAL.ThePlayer.HUD) ~= "table" then return end
-	if not IsDefaultScreen() then return end
+	if not CanUseGestureWheel() then return end
 	
 	keydown = true
 	SetModHUDFocus("GestureWheel", true)
+	using_gesture_wheel = true
 	
 	ResetTransform()
 	
@@ -279,7 +285,9 @@ local function HideGestureWheel(delay_focus_loss)
 	gesturewheel:Hide()
 	gesturewheel.inst.UITransform:SetScale(STARTSCALE, STARTSCALE, 1)
 	
-	if not IsDefaultScreen() then return end
+	local can_use_wheel = CanUseGestureWheel()
+	using_gesture_wheel = false
+	if not can_use_wheel then return end
 	
 	if RESTORECURSOR then
 		if ADJUSTCURSOR then
